@@ -1,36 +1,37 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+
 
 function App() {
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const userInfo = {
-    username : username,
-    email : email,
-    password : password
-  }
-  // function handleSubmit(e){
-  //   e.preventDefault()
-    
-  //   fetch(`http://localhost:8000/creation`, {
-  //     method: "POST",
-  //     headers: {
-  //         "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify(newCharacter)
-  //   })
-  //   .then((resp) => resp.json())
-  //   .then((data) => addNewCharacter(data))
-  // }
-  // onSubmit={handleSubmit}
+  const [userName, setUserName] = useState("Hello")
+  function handleLogout(){
+    fetch(`/logout`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}) 
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Logout successful');
+        } else {
+          console.error('Logout failed:', response.status);
+        }
+      })
+      .catch(error => {
+        console.error('Error during logout request:', error);
+      });
+}
+  useEffect(() => {  
+    fetch("/usercard")
+    .then((resp) => resp.json())
+    .then((data) => setUserName(data))
+  }, [])
   return (
     <div>
-      <form >
-        <input type="text" value={username}  onChange={(e) => setUsername(e.target.value)}></input>
-        <input type="email" value={email}  onChange={(e) => setEmail(e.target.value)}></input>
-        <input type="password" value={password}  onChange={(e) => setPassword(e.target.value)}></input>
-        <input type="submit" value="Submit" ></input>
-      </form>
+      <h1>{userName.username}</h1>
+      <button onClick={handleLogout}>Log out</button>
     </div>
   )
 }

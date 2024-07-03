@@ -1,7 +1,176 @@
-:root {
-  --bg: #282c34;
-  --header: #fff;
-  --link: #61dafb;
-  --text: hsla(0, 0%, 100%, 0.88);
+html, body {
+  margin: 0; 
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
 }
 
+@font-face {
+  font-family: racefont;
+  src: url(./components/fonts/Raceline\ Demo.otf);
+}
+
+@font-face {
+  font-family: raceHeadingFont;
+  src: url(./components/fonts/STOCKCAR\ PERSONAL\ USE.ttf);
+}
+
+.loginBg{
+  background-image: url("https://newsroom.porsche.com/.imaging/mte/porsche-templating-theme/image_1290x726/dam/pnr/2021/Products/911-five-modes-in-one-day/sport-mode/MFR09717-north-pennine-moors--sport.jpeg/jcr:content/MFR09717-north%20pennine%20moors%20-sport.jpeg");
+  
+  height: 100%;
+  
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100vw;
+  opacity: .9;
+}
+
+.signUpBg{
+  background-image: url("https://www.ford.com/content/dam/vdm_ford/live/en_us/ford/nameplate/mustang/2024/collections/equipment/3-2/24_Mustang_Dark_Horse_13_32.jpg/jcr:content/renditions/cq5dam.web.1440.1440.jpeg");
+  
+  height: 100%;
+  
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100vw;
+  opacity: .9;
+}
+
+.loginContainer{
+  display: flex;
+  width: 680px;
+  height: 627px;
+  justify-content: center;
+}
+
+.formContainer {
+  position: relative;
+  top: 25px;
+  width: 380px;
+  height: 300px;
+}
+
+.formContainer h1 {
+  color: rgb(0, 0, 0);
+  font-size: 56px;
+  font-family: racefont;
+}
+
+.formContainer h2 {
+  color: black;
+  font-family: racefont;
+  margin-top: 70px;
+}
+.formContainer .formInput {
+  padding: 10px;
+  margin-top: 30px;
+  margin-bottom: 25px;
+  width : 350px;
+  height: 25px;
+  opacity: .99;
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  font-size: 18px;
+  font-family: racefont;
+}
+
+.formContainer .label {
+  position: absolute;
+  margin-bottom: 5px;
+  font-size: 18px;
+  font-family: racefont;
+  opacity: 1;
+  margin-top: 10px;
+}
+
+.formInput:focus {
+  background-image: url('https://cdnb.artstation.com/p/assets/images/images/043/813/939/original/rodrigo-ezgif-1-c7c4faf9660d.gif?1638322753');
+  background-size: 80px;
+  background-repeat: no-repeat;
+  opacity: 1.5;
+  background-position: right;
+}
+
+.loginButton {
+  background-color: #000000; /* Green */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  font-family: racefont;
+  right: 0;
+  cursor: pointer;
+}
+
+.logLink:active {
+  color:#000000
+}
+
+.logLink:visited {
+  color: rgb(208, 226, 43);
+}
+.auctionBg {
+  position: relative;
+  height: 110vh;
+  top: 0px;
+  width: 100vw;
+  border-style: solid;
+  background-size: auto;
+  background-image: url("https://i0.wp.com/thebackroads.co.uk/wp-content/uploads/2019/12/mad-mike-whiddett-touge-course.jpg?fit=1500%2C1000&ssl=1");
+}
+.auctionBox {
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px;
+}
+
+#auctionHeading {
+  position: relative;
+  left: 250px;
+  font-family: racefont;
+  margin-top: 0;
+}
+.auctionBox .formInput {
+  padding: 10px;
+  width : 350px;
+  height: 25px;
+  opacity: .99;
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  font-size: 18px;
+  font-family: racefont;
+  margin-bottom: 10px;
+}
+
+.auctionBox .loginButton {
+  background-color: #000000; 
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  font-family: racefont;
+  right: 0;
+  cursor: pointer;
+}
+
+.auctionBox .label {
+  font-size: 18px;
+  font-family: racefont;
+  opacity: 1;
+  margin-top: 10px;
+}
+.auctionInput {
+  background-color: #000000;
+  padding: 1px 50px 1px 1px;
+  color: rgb(255, 255, 255);
+  font-family: racefont;
+  font-size: 16px;
+}
