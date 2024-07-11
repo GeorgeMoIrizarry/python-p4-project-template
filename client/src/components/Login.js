@@ -15,17 +15,26 @@ function Login() {
         e.preventDefault()
     
         fetch(`/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userInfo)
-        })
-        .then((resp) => resp.json())
-        .then((data) => {
-          console.log(data)
-          navigate('/')
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(userInfo)
       })
+      .then((resp) => {
+          if (!resp.ok) {
+              throw new Error("Unauthorized");
+          }
+          return resp.json();
+      })
+      .then((data) => {
+          console.log(data);
+          navigate('/');
+      })
+      .catch((error) => {
+          console.error(error);
+          alert("Profile Does Not Exist, Enter Correct Credentials Or Sign Up")
+      });
         
     }
 
@@ -69,7 +78,7 @@ function Login() {
               </form>
               {/* <button onClick={handleLogout}>Log out</button> */}
               <nav id="sidebar">
-                <h2>Not Registered? <NavLink to="/sign-up" className="logLink">Sign Up Now!</NavLink>!</h2>
+                <h2>Not Registered? <NavLink to="/sign-up" className="logLink">Sign Up Now!</NavLink></h2>
               </nav>
             </div>
           </div>

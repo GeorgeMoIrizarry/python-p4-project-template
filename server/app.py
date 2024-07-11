@@ -9,7 +9,7 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api, login_manager
 # Add your model imports
-from models import User, Auction
+from models import User, Auction, Bid, Comment
 
 # Views go here!
 
@@ -68,6 +68,23 @@ class UserCard(Resource):
         user = current_user.to_dict()
         return user, 200
 
+    @login_required
+    def delete(self):
+        user = User.query.get(current_user.id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return {"message": "User and associated records deleted successfully"}, 200
+        else:
+            return {"message": "User not found"}, 404
+
+    
+
+
+
+
+
+
 class AuctionForm(Resource):
     @login_required
     def get(self):
@@ -97,11 +114,49 @@ class AuctionForm(Resource):
             return make_response(jsonify({"msg": "Missing reserve"}), 409)
         
         new_auction = Auction(brand=brand, model=model, drivetrain=drivetrain, transmission=transmission,
-         reserve=reserve, image_one=image_one, image_two=image_two, image_three=image_three, image_four=image_four, image_five=image_five)
+        reserve=reserve, image_one=image_one, image_two=image_two, image_three=image_three, image_four=image_four, image_five=image_five)
         new_auction.user_id = current_user.id
         db.session.add(new_auction)
         db.session.commit()
-        return make_response(jsonify({"username": new_auction.brand}), 201)
+        returned_auction = Auction.query.get(new_auction.id)
+        print(returned_auction)
+        print("Hello")
+        return returned_auction.to_dict(), 201
+
+class AuctionCardDynamic(Resource):
+
+    @login_required
+    def get(self, id):
+        auction_card = Auction.query.get(id)
+        return auction_card.to_dict(), 200
+
+    @login_required
+    def patch(self, id):
+        print("We're Here")
+        new_bid = Auction.query.get(id)
+        if new_bid:
+            print("We're here 2")
+            params = request.json
+            for attr in params:
+                setattr(new_bid, attr, params[attr])
+            db.session.commit()
+            bid_dict = new_bid.to_dict()
+            return bid_dict, 200
+        else:
+            return make_response(jsonify({"msg": "Missing reserve"}), 409)
+
+class AuctionCard(Resource):
+
+    @login_required
+    def get(self):
+        all_auctions = []
+        for auction in Auction.query.all():
+            all_auctions.append(auction.to_dict())
+        return make_response(all_auctions)
+
+    
+
+
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -109,13 +164,96 @@ def user_loader(user_id):
     return User.query.get(int(user_id))
 
 
+class UserCardPatch(Resource):
+    @login_required
+    def patch(self, id):
+        print("We're Here")
+        user = User.query.get(id)
+        if user:
+            print("We're here 2")
+            params = request.json
+            for attr in params:
+                setattr(user, attr, params[attr])
+            db.session.commit()
+            user_dict = user.to_dict()
+            return user_dict, 200
+        else:
+            return make_response(jsonify({"msg": "Missing reserve"}), 409)
 
+class BidResource(Resource):
+    @login_required
+    def post(self):
+        user_id = request.json.get('user_id')
+        auction_id = request.json.get('auction_id')
+        amount = request.json.get('amount')
+        print(user_id)
+        print(auction_id)
+        print(amount)
+
+        old_bid = Bid(user_id=user_id, auction_id=auction_id, amount=amount)
+        db.session.add(old_bid)
+        db.session.commit()
+
+        return make_response(jsonify({"old bid": old_bid.amount}), 201)
+
+class BidResources(Resource):
+    @login_required
+    def get(self, id):
+        auction = Auction.query.get(id)
+        bids = auction.bids
+
+        bids_with_user = []
+        for bid in bids:
+            bid_dict = bid.to_dict()  # Assuming you have implemented the to_dict() method using SerializerMixin
+            bid_dict['user'] = bid.user.to_dict()  # Retrieve the associated user information
+            bids_with_user.append(bid_dict)
+        print(bids_with_user)
+        return bids_with_user, 200
+
+class CommentResource(Resource):
+    @login_required
+    def post(self):
+        user_id = request.json.get('user_id')
+        auction_id = request.json.get('auction_id')
+        body = request.json.get('body')
+        print(user_id)
+        print(auction_id)
+        print(body)
+
+        comment = Comment(user_id=user_id, auction_id=auction_id, body=body)
+        db.session.add(comment)
+        db.session.commit()
+        return make_response(jsonify({"comment": body}), 201)
+
+class CommentResources(Resource):
+    @login_required
+    def get(self, id):
+        auction = Auction.query.get(id)
+        comments = auction.comments
+
+        comments_with_user = []
+        for comment in comments:
+            comment_dict = comment.to_dict()  # Assuming you have implemented the to_dict() method using SerializerMixin
+            comment_dict['user'] = comment.user.to_dict()  # Retrieve the associated user information
+            comments_with_user.append(comment_dict)
+        print(comments_with_user)
+        return comments_with_user, 200
+
+        
 
 api.add_resource(UserRegister, '/signup', endpoint='signup')
 api.add_resource(UserLogin, '/login', endpoint='login')
 api.add_resource(UserLogout, '/logout', endpoint='logout')
 api.add_resource(UserCard, '/usercard', endpoint='usercard')
+api.add_resource(UserCardPatch, '/usercard/<int:id>', endpoint='usercardId')
 api.add_resource(AuctionForm, '/auctionform', endpoint='auctionform')
+api.add_resource(AuctionCardDynamic, '/auction-card/<int:id>', endpoint='auctioncardId')
+api.add_resource(AuctionCard, '/auctioncards', endpoint='auctioncards')
+api.add_resource(BidResource, '/bids', endpoint='bid')
+api.add_resource(BidResources, '/bids/<int:id>', endpoint='bids')
+api.add_resource(CommentResource, '/comments', endpoint='comment')
+api.add_resource(CommentResources, '/comments/<int:id>', endpoint='comments')
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

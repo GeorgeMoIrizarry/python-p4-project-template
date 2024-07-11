@@ -13,6 +13,7 @@ function AuctionForm() {
     const [imageFour, setImageFour] = useState("")
     const [imageFive, setImageFive] = useState("")
     const [reserve, setReserve] = useState("")
+    const [newAuctionForm, setAuctionForm] = useState("")
     const navigate = useNavigate()
 
     const brands = [
@@ -113,8 +114,9 @@ function AuctionForm() {
         })
         .then((resp) => resp.json())
         .then((data) => {
-            console.log(data)
-            navigate('/login')
+            setAuctionForm(data)
+            console.log()
+            navigate(`/`)
         })
     }
 
@@ -152,6 +154,31 @@ function AuctionForm() {
         image_five : imageFive
     }
     console.log(vehicleInformation)
+    function handleLogout(){
+        fetch(`/logout`, {
+    
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}) 
+          })
+          .then(response => {
+            if (response.ok) {
+              console.log('Logout successful');
+              navigate('/login')
+            } else {
+              console.error('Logout failed:', response.status);
+            }
+          })
+          .catch(error => {
+            console.error('Error during logout request:', error);
+          });
+    }
+    function handleNav(){
+        navigate('/')
+    }
     return (
         <div className="auctionBg">
             <h1 id="auctionHeading">🏁 Enter Vehicle Information and Publish Vehicle 🏁</h1>
@@ -191,6 +218,8 @@ function AuctionForm() {
                     <input placeholder="Set Reserve..." type="text" className="formInput" value={reserve}  onChange={(e) => setReserve(e.target.value)} required></input>
                     <input className="loginButton" type="submit" value="Publish Vehicle" ></input>
                 </form>
+                <input type='button' id="logOutBtn" className="loginButton" value='Log Out'onClick={handleLogout}></input>
+                <input type='button' id="homeButton" className="loginButton" value='Home'onClick={handleNav}></input>
             </div>
         </div>
     )

@@ -8,15 +8,19 @@ class User(db.Model, SerializerMixin, UserMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(), unique=True, nullable=False)
-    email = db.Column(db.String(),unique=True, nullable=False)
+    email = db.Column(db.String(), unique=True, nullable=False)
     _password_hash = db.Column(db.String(), nullable=False)
+    profile_image = db.Column(db.String(), nullable=True)
     bio = db.Column(db.String(), nullable=True)
     feature_image = db.Column(db.String(), nullable=True)
 
-    serialize_rules = ('-email', '-_password_hash', 'auctions_made.user')
-    
-    auctions_made = db.relationship('Auction', back_populates="user")
+    comments = db.relationship('Comment', back_populates='user', lazy=True, cascade='all, delete-orphan')
+    bids = db.relationship('Bid', back_populates='user', lazy=True, cascade='all, delete-orphan')
 
+    serialize_rules = ('-comments.user.bids', '-bids.user.comments', '-bids.auction.bids', '-comments.auction.comments', '-comments.user', '-bids.user')
+
+    # Rest of the code
+    
     @property
     def password_hash(self):
         return self._password_hash
@@ -38,7 +42,7 @@ class Auction(db.Model, SerializerMixin, UserMixin):
     brand = db.Column(db.String(), nullable=False) 
     model = db.Column(db.String(), nullable=False) 
     drivetrain = db.Column(db.String(), nullable=False) 
-    transmission = db.Column(db.String(), nullable=False) 
+    transmission = db.Column(db.String(), nullable=False)    
     reserve = db.Column(db.Integer(), nullable=False)
     image_one = db.Column(db.String(), nullable=False) 
     image_two = db.Column(db.String(), nullable=False) 
@@ -47,4 +51,40 @@ class Auction(db.Model, SerializerMixin, UserMixin):
     image_five = db.Column(db.String(), nullable=False) 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    user = db.relationship('User', back_populates="auctions_made")
+    comments = db.relationship('Comment', back_populates='auction')
+    bids = db.relationship('Bid', back_populates='auction')
+
+    serialize_rules = ('-comments.auction', '-bids.auction', '-bids.user', '-comments.user')
+    # Rest of the code
+
+class Bid(db.Model, SerializerMixin, UserMixin):
+    __tablename__ = 'bids'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    auction_id = db.Column(db.Integer, db.ForeignKey('auctions.id'))
+    amount = db.Column(db.Integer)
+
+    user = db.relationship('User', back_populates='bids')
+    auction = db.relationship('Auction', back_populates='bids')
+
+    serialize_rules = ('-user.bids', '-auction.bids', '-user.comments.user', '-auction.comments.auction')
+
+    # Rest of the code
+
+class Comment(db.Model, SerializerMixin, UserMixin):
+    __tablename__ = 'comments'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    auction_id = db.Column(db.Integer, db.ForeignKey('auctions.id'))
+    body = db.Column(db.String)
+
+    user = db.relationship('User', back_populates='comments')
+    auction = db.relationship('Auction', back_populates='comments')
+
+    serialize_rules = ('-user.comments', '-auction.comments', '-user.bids.user', '-auction.bids.auction')
+
+    # Rest of the code
+
+    

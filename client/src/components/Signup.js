@@ -15,17 +15,26 @@ function SignUp() {
         e.preventDefault()
     
         fetch(`/signup`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userInfo)
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(userInfo)
+      })
+        .then((resp) => {
+            if (resp.status === 409) {
+                throw new Error("Account already exists");
+            }
+            return resp.json();
         })
-        .then((resp) => resp.json())
         .then((data) => {
-            console.log(data)
-            navigate('/login')
+            console.log(data);
+            navigate('/login');
         })
+        .catch((error) => {
+            console.error(error);
+            alert(error.message); // Display the error message in an alert
+        });
     }
   
     return (
